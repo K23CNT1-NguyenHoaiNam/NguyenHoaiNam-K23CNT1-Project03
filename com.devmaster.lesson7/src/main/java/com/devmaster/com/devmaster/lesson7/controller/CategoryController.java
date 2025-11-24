@@ -1,4 +1,4 @@
-package com.devmaster.lesson07.controller;
+package com.devmaster.com.devmaster.lesson7.controller;
 import com.devmaster.lesson07.entity.Category;
 import com.devmaster.lesson07.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
