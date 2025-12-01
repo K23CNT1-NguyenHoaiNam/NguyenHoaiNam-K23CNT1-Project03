@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Bán Hàng K23CNT1</title>
+    <!-- Liên kết đến file CSS tĩnh -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="header">
+    <div class="container nav-bar">
+        <div class="logo">
+            <a th:href="@{/}">K23CNT1 Store</a>
+        </div>
+        <nav class="nav-links">
+            <a th:href="@{/products}">Sản Phẩm</a>
+            <!-- Hiển thị link Admin nếu người dùng có quyền ROLE_ADMIN -->
+            <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/dashboard}">Quản Lý</a>
+
+            <!-- Logic Đăng nhập / Đăng ký -->
+            <a sec:authorize="!isAuthenticated()" th:href="@{/auth/login}">Đăng Nhập</a>
+            <a sec:authorize="!isAuthenticated()" th:href="@{/auth/register}">Đăng Ký</a>
+
+            <!-- Logic Đăng xuất -->
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn-logout">Đăng Xuất</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <h1>Chào mừng đến với Cửa hàng K23CNT1</h1>
+    <p>Đây là danh sách một số sản phẩm nổi bật:</p>
+
+    <div class="product-grid">
+        <!-- Sản phẩm mẫu 1 -->
+        <div class="product-card">
+            <!-- Đường dẫn ảnh mẫu. Bạn cần đặt ảnh "placeholder.jpg" vào thư mục static/images/ -->
+            <img th:src="@{/images/placeholder.jpg}" alt="Sản phẩm 1" class="product-image">
+            <div class="product-info">
+                <h3>Áo phông Unisex 2024</h3>
+                <p class="product-price">250.000 VND</p>
+                <button class="btn-buy">Mua ngay</button>
+            </div>
+        </div>
+
+        <!-- Sản phẩm mẫu 2 -->
+        <div class="product-card">
+            <img th:src="@{/images/placeholder.jpg}" alt="Sản phẩm 2" class="product-image">
+            <div class="product-info">
+                <h3>Giày thể thao AYZ</h3>
+                <p class="product-price">1.500.000 VND</p>
+                <button class="btn-buy">Mua ngay</button>
+            </div>
+        </div>
+
+        <!-- Thêm nhiều thẻ sản phẩm khác ở đây -->
+    </div>
+</main>
+
+<footer class="footer">
+    <!-- Nội dung footer -->
+</footer>
+
+</body>
+</html>

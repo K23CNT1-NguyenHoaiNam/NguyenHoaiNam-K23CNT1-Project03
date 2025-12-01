@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký - K23CNT1</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* CSS dành riêng cho trang login/register */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px; /* Thẻ đăng ký thường rộng hơn thẻ đăng nhập */
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #28a745; /* Màu xanh lá cây cho đăng ký */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-submit:hover {
+            background-color: #1e7e34;
+        }
+        .alert-error {
+            color: #dc3545;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #dc3545;
+            background-color: #f8d7da;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #28a745;">Đăng Ký Tài Khoản</h2>
+
+            <!-- Hiển thị thông báo lỗi (từ AuthService) -->
+            <div th:if="${error}" class="alert-error" th:text="${error}">
+                Thông báo lỗi (Username hoặc Email đã tồn tại)
+            </div>
+
+            <!-- Form Đăng ký -->
+            <form th:action="@{/auth/register}" th:object="${registerRequest}" method="post">
+                <div class="form-group">
+                    <label for="hoten">Họ và Tên:</label>
+                    <input type="text" id="hoten" th:field="*{hoten}" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập:</label>
+                    <input type="text" id="username" th:field="*{username}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" th:field="*{email}" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu:</label>
+                    <input type="password" id="password" th:field="*{password}" required>
+                </div>
+                <button type="submit" class="btn-submit">Đăng Ký</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px;">
+                Đã có tài khoản? <a th:href="@{/auth/login}">Đăng nhập</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

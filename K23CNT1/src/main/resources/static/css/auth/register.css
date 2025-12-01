@@ -1,0 +1,15 @@
+/* Tùy chỉnh riêng cho trang Đăng ký */
+
+/* Thay đổi màu nút bấm register */
+.auth-card .btn-submit {
+    background-color: #28a745; /* Màu xanh lá cây */
+}
+
+.auth-card .btn-submit:hover {
+    background-color: #1e7e34;
+}
+
+/* Đảm bảo form đăng ký có không gian rộng hơn nếu cần */
+.auth-container .auth-card {
+    max-width: 500px;
+}
