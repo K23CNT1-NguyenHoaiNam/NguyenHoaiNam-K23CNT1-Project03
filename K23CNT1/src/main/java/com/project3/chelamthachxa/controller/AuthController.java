@@ -19,7 +19,7 @@ public class AuthController {
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
         model.addAttribute("registerRequest", new RegisterRequest());
-        // SỬA: Thay đổi đường dẫn template thành "auth/register"
+        // Sử dụng tên template hợp lệ
         return "auth/register";
     }
 
@@ -28,12 +28,11 @@ public class AuthController {
     public String registerUser(@ModelAttribute RegisterRequest request, Model model) {
         try {
             authService.registerUser(request);
-            // SỬA: Redirect đến trang đăng nhập
+            // Redirect đến URL Controller chính xác
             return "redirect:/auth/login?success=true";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("registerRequest", request);
-            // SỬA: Quay lại template trong thư mục con
             return "auth/register";
         }
     }
@@ -41,7 +40,7 @@ public class AuthController {
     // Endpoint hiển thị trang Đăng nhập
     @GetMapping("/login")
     public String showLoginForm() {
-        // SỬA: Thay đổi đường dẫn template thành "auth/login"
+        // Sử dụng tên template hợp lệ
         return "auth/login";
     }
 }

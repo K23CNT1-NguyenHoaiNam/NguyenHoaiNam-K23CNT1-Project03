@@ -16,17 +16,21 @@ public class Sanpham {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    // THÊM @Column: Đảm bảo Hibernate ánh xạ đúng tên cột
+    @Column(name = "tensanpham", nullable = false)
     private String tenSanPham;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "mota", columnDefinition = "TEXT")
     private String moTa;
 
-    @Column(nullable = false)
+    @Column(name = "gia", nullable = false)
     private BigDecimal gia;
 
+    // THÊM @Column: Đảm bảo Hibernate ánh xạ đúng tên cột
+    @Column(name = "soluongton")
     private Integer soLuongTon;
 
-    // Đường dẫn ảnh sản phẩm
+    // Đảm bảo tên cột khớp với CSDL
+    @Column(name = "image_url")
     private String imageUrl;
 }

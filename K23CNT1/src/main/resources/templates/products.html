@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Sản Phẩm</title>
+    <!-- Liên kết đến CSS chung để giữ phong cách thống nhất -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<header class="header">
+    <div class="container nav-bar">
+        <div class="logo">
+            <a th:href="@{/}">K23CNT1</a>
+        </div>
+        <nav class="nav-links">
+            <a th:href="@{/}">Trang Chủ</a>
+            <a th:href="@{/products}">Sản Phẩm</a>
+            <a href="#">Giới Thiệu</a>
+            <a href="#">Liên Hệ</a>
+            <!-- Hiển thị link Admin -->
+            <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/dashboard}" style="color: var(--primary-color); font-weight: bold;">Quản Lý</a>
+            <!-- Logic Đăng xuất -->
+            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn-logout">Thoát</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+
+    <h1 class="section-title">TẤT CẢ SẢN PHẨM</h1>
+
+    <!-- Hiển thị lưới sản phẩm -->
+    <div class="product-grid">
+        <!-- Vòng lặp qua danh sách sản phẩm được truyền từ Controller -->
+        <div class="product-card" th:each="product : ${products}">
+            <div class="product-image-container">
+                <!-- SỬA LỖI PATH: Bắt buộc sử dụng /static/ để đảm bảo Spring tìm đúng vị trí -->
+                <img th:src="@{${product.imageUrl} + '?v=13'}"
+                     th:alt="${product.tenSanPham}"
+                     class="product-image"
+                     onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';"> <!-- Thêm Fallback -->
+            </div>
+            <div class="product-info">
+                <!-- SỬA LỖI NULL: Sử dụng tên thuộc tính chuẩn (tenSanPham) -->
+                <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
+
+                <!-- Định dạng giá -->
+                <p class="product-price" th:text="${#numbers.formatDecimal(product.gia, 0, 'POINT', 0, 'COMMA') + ' VND'}">Giá</p>
+
+                <!-- SỬA LỖI NULL: Sử dụng tên thuộc tính chuẩn (soLuongTon) -->
+                <p th:text="'Kho: ' + ${product.soLuongTon}"></p>
+                <button class="btn-buy">Xem chi tiết</button>
+            </div>
+        </div>
+
+        <!-- Nếu không có sản phẩm nào -->
+        <div th:if="${#lists.isEmpty(products)}" style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+            <p>Hiện tại không có sản phẩm nào trong cửa hàng.</p>
+        </div>
+    </div>
+</main>
+
+<footer class="footer" style="text-align: center; padding: 20px; background: #333; color: white; margin-top: 50px;">
+    <div class="container">
+        <p>&copy; 2025 K23CNT1 Store.</p>
+    </div>
+</footer>
+
+</body>
+</html>
