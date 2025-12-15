@@ -60,7 +60,7 @@ a:hover {
 }
 
 .logo img {
-    height: 100px; /* Kích thước logo chuẩn cho thanh navbar */
+    height: 200px; /* Kích thước logo chuẩn cho thanh navbar */
     width: auto;
     object-fit: contain;
 }

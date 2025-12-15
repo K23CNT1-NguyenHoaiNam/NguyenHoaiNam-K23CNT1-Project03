@@ -6,8 +6,8 @@
 }
 
 .auth-card .btn-submit:hover {
-    background-color: #0056b3;
 }
+    background-color: #0056b3;
 
 /* Tùy chỉnh thông báo thành công (ví dụ: sau khi đăng ký) */
 .alert-success {
