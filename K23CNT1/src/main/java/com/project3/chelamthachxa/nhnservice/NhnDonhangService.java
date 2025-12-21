@@ -34,9 +34,53 @@ public class NhnDonhangService {
         return nhnDonhangRepository.findAll();
     }
 
-    // Lấy đơn hàng theo ID
+    // ADMIN: Get All Orders as DTOs
+    @Transactional // Quan trọng để giữ session mở khi truy cập lazy collections
+    public List<com.project3.chelamthachxa.nhndto.NhnOrderDTO> findAllOrderDTOs() {
+        List<NhnDonhang> orders = nhnDonhangRepository.findAll();
+        return orders.stream().map(this::convertToDTO).collect(java.util.stream.Collectors.toList());
+    }
+
+    private com.project3.chelamthachxa.nhndto.NhnOrderDTO convertToDTO(NhnDonhang order) {
+        com.project3.chelamthachxa.nhndto.NhnOrderDTO dto = new com.project3.chelamthachxa.nhndto.NhnOrderDTO();
+        dto.setId(order.getId());
+        dto.setNgayDatHang(order.getNgayDatHang());
+        dto.setTongTien(order.getTongTien());
+        dto.setTrangThai(order.getTrangThai().name());
+        dto.setTenNguoiNhan(order.getTenNguoiNhan());
+        dto.setDiaChiGiaoHang(order.getDiaChiGiaoHang());
+        dto.setSdt(order.getSdt());
+
+        if (order.getNhnUser() != null) {
+            dto.setUserId(order.getNhnUser().getId());
+            dto.setUsername(order.getNhnUser().getUsername());
+        }
+
+        // Map Items
+        if (order.getNhnDonhangItems() != null) {
+            List<com.project3.chelamthachxa.nhndto.NhnOrderDTO.NhnOrderItemDTO> itemDTOs = order.getNhnDonhangItems().stream().map(item -> {
+                com.project3.chelamthachxa.nhndto.NhnOrderDTO.NhnOrderItemDTO itemDTO = new com.project3.chelamthachxa.nhndto.NhnOrderDTO.NhnOrderItemDTO();
+                itemDTO.setProductId(item.getNhnSanpham().getId());
+                itemDTO.setProductName(item.getNhnSanpham().getTenSanPham());
+                itemDTO.setQuantity(item.getSoLuong());
+                itemDTO.setPrice(item.getGiaBan());
+                itemDTO.setImageUrl(item.getNhnSanpham().getImageUrl());
+                return itemDTO;
+            }).collect(java.util.stream.Collectors.toList());
+            dto.setItems(itemDTOs);
+        }
+        return dto;
+    }
+
+    // Lấy đơn hàng theo ID (Entity)
     public Optional<NhnDonhang> findOrderById(Long id) {
         return nhnDonhangRepository.findById(id);
+    }
+
+    // Lấy đơn hàng theo ID (DTO)
+    @Transactional
+    public Optional<com.project3.chelamthachxa.nhndto.NhnOrderDTO> findOrderDTOById(Long id) {
+        return nhnDonhangRepository.findById(id).map(this::convertToDTO);
     }
 
     // Lấy đơn hàng theo NhnUser ID
@@ -93,6 +137,7 @@ public class NhnDonhangService {
     }
 
     // UPDATE: Cập nhật trạng thái đơn hàng (Admin)
+    // UPDATE: Cập nhật trạng thái đơn hàng (Admin)
     @Transactional
     public NhnDonhang updateOrderStatus(Long orderId, NhnDonhang.TrangThaiDonHang newStatus) {
         return nhnDonhangRepository.findById(orderId)
@@ -101,5 +146,12 @@ public class NhnDonhangService {
                     return nhnDonhangRepository.save(donhang);
                 })
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Đơn hàng với ID: " + orderId));
+    }
+
+    // UPDATE: Cập nhật trạng thái đơn hàng (Trả về DTO)
+    @Transactional
+    public com.project3.chelamthachxa.nhndto.NhnOrderDTO updateOrderStatusDTO(Long orderId, NhnDonhang.TrangThaiDonHang newStatus) {
+        NhnDonhang updatedOrder = updateOrderStatus(orderId, newStatus);
+        return convertToDTO(updatedOrder);
     }
 }

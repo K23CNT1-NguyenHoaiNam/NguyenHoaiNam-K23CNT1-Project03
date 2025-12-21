@@ -46,6 +46,8 @@ public class NhnDonhang {
     // Nếu bạn cũng đã đổi tên thuộc tính đó, hãy kiểm tra lại.
     // (Giữ nguyên "nhnDonhang" như code gốc của bạn đã sửa lỗi trước đó)
     @OneToMany(mappedBy = "nhnDonhang", cascade = CascadeType.ALL, orphanRemoval = true)
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private Set<NhnDonhangItem> nhnDonhangItems;
 
     public enum TrangThaiDonHang {

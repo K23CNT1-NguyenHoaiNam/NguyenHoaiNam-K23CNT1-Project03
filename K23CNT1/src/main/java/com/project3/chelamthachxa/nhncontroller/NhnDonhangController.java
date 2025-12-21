@@ -37,25 +37,25 @@ public class NhnDonhangController {
 
     // READ: Xem chi tiết đơn hàng
     @GetMapping("/{id}")
-    public ResponseEntity<NhnDonhang> getOrderById(@PathVariable Long id) {
-        return nhnDonhangService.findOrderById(id)
+    public ResponseEntity<com.project3.chelamthachxa.nhndto.NhnOrderDTO> getOrderById(@PathVariable Long id) {
+        return nhnDonhangService.findOrderDTOById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // ADMIN: Lấy tất cả đơn hàng (Chỉ Admin)
     @GetMapping("/admin/all")
-    public ResponseEntity<List<NhnDonhang>> getAllOrders() {
-        return ResponseEntity.ok(nhnDonhangService.findAllOrders());
+    public ResponseEntity<List<com.project3.chelamthachxa.nhndto.NhnOrderDTO>> getAllOrders() { // Full path for DTO to avoid import ambiguity if any
+        return ResponseEntity.ok(nhnDonhangService.findAllOrderDTOs());
     }
 
     // ADMIN: Cập nhật trạng thái đơn hàng (Chỉ Admin)
     @PutMapping("/admin/{orderId}/status")
-    public ResponseEntity<NhnDonhang> updateOrderStatus(
+    public ResponseEntity<com.project3.chelamthachxa.nhndto.NhnOrderDTO> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestParam NhnDonhang.TrangThaiDonHang newStatus) {
         try {
-            NhnDonhang updatedOrder = nhnDonhangService.updateOrderStatus(orderId, newStatus);
+            com.project3.chelamthachxa.nhndto.NhnOrderDTO updatedOrder = nhnDonhangService.updateOrderStatusDTO(orderId, newStatus);
             return ResponseEntity.ok(updatedOrder);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

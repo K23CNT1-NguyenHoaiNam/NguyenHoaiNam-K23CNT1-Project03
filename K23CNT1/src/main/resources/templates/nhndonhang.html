@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Đơn Hàng - K23CNT1 Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css?v=11}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container nav-bar">
+            <div class="logo">
+                <a th:href="@{/nhnindex}">
+                    <img th:src="@{/images/logo.png}" alt="Minh Thủy Chè Lam Logo">
+                </a>
+            </div>
+            <nav class="nav-links">
+                <a th:href="@{/nhnindex}">Trang Chủ</a>
+                <a th:href="@{/nhnproducts}">Sản Phẩm</a>
+                <a th:href="@{/nhnabout}">Giới Thiệu</a>
+                <a th:href="@{/nhnnews}">Tin Tức</a>
+                <a th:href="@{/nhncontact}">Liên Hệ</a>
+
+                <!-- Link Đơn Hàng (Chỉ hiện khi đã đăng nhập) -->
+                <a sec:authorize="isAuthenticated()" th:href="@{/nhndonhang}"
+                    style="color: var(--primary-color); font-weight: bold;">Đơn Hàng</a>
+
+                <a th:href="@{/nhncart}" style="font-weight: bold;">
+                    <i class="fas fa-shopping-cart"></i> (<span
+                        th:text="${session.NHN_CART != null ? session.NHN_CART.size() : 0}">0</span>)
+                </a>
+
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/nhnadmin_dashboard}"
+                    style="color: var(--primary-color); font-weight: bold;">Quản Lý</a>
+
+                <a sec:authorize="!isAuthenticated()" th:href="@{/auth/login}">Đăng Nhập</a>
+                <a sec:authorize="!isAuthenticated()" th:href="@{/auth/register}">Đăng Ký</a>
+
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-logout">
+                        <span sec:authentication="name">User</span> (Thoát)
+                    </button>
+                </form>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="container mx-auto py-10 px-4 flex-grow">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-[#A00000] uppercase">Lịch Sử Đơn Hàng</h1>
+            <div class="w-20 h-1 bg-[#A00000] mx-auto mt-2"></div>
+        </div>
+
+        <!-- Order Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 text-gray-700 uppercase text-sm leading-normal">
+                        <th class="py-3 px-6 text-left">Mã Đơn</th>
+                        <th class="py-3 px-6 text-left">Ngày Đặt</th>
+                        <th class="py-3 px-6 text-center">Trạng Thái</th>
+                        <th class="py-3 px-6 text-right">Tổng Tiền</th>
+                        <th class="py-3 px-6 text-center">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-600 text-sm font-light">
+
+                    <tr th:each="order : ${orders}" class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-3 px-6 text-left whitespace-nowrap">
+                            <span class="font-medium" th:text="'#' + ${order.id}">#123</span>
+                        </td>
+                        <td class="py-3 px-6 text-left">
+                            <span
+                                th:text="${#temporals.format(order.ngayDatHang, 'dd/MM/yyyy HH:mm')}">20/12/2025</span>
+                        </td>
+                        <td class="py-3 px-6 text-center">
+                            <span th:if="${order.trangThai.name() == 'PENDING'}"
+                                class="bg-yellow-200 text-yellow-800 py-1 px-3 rounded-full text-xs">Chờ xử lý</span>
+                            <span th:if="${order.trangThai.name() == 'PROCESSING'}"
+                                class="bg-blue-200 text-blue-800 py-1 px-3 rounded-full text-xs">Đang xử lý</span>
+                            <span th:if="${order.trangThai.name() == 'SHIPPED'}"
+                                class="bg-purple-200 text-purple-800 py-1 px-3 rounded-full text-xs">Đang giao</span>
+                            <span th:if="${order.trangThai.name() == 'DELIVERED'}"
+                                class="bg-green-200 text-green-800 py-1 px-3 rounded-full text-xs">Đã giao</span>
+                            <span th:if="${order.trangThai.name() == 'CANCELLED'}"
+                                class="bg-red-200 text-red-800 py-1 px-3 rounded-full text-xs">Đã hủy</span>
+                        </td>
+                        <td class="py-3 px-6 text-right">
+                            <span class="font-bold text-[#A00000]"
+                                th:text="${#numbers.formatDecimal(order.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">100.000
+                                đ</span>
+                        </td>
+                        <td class="py-3 px-6 text-center">
+                            <!-- Placeholder View Button -->
+                            <button class="text-gray-500 hover:text-[#A00000] transform hover:scale-110">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Empty State -->
+                    <tr th:if="${orders.empty}">
+                        <td colspan="5" class="py-10 text-center text-gray-500">
+                            Bạn chưa có đơn hàng nào. <a th:href="@{/nhnproducts}" class="text-[#A00000] font-bold">Mua
+                                sắm ngay</a>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer-section mt-auto">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>CÔNG TY CỔ PHẦN SX TM SHT</h4>
+                    <p>Địa chỉ: Số 123, Đường XYZ, Quận ABC, TP Hà Nội.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Chính sách</h4>
+                    <ul>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Tài khoản</h4>
+                    <ul>
+                        <li><a th:href="@{/auth/login}">Đăng nhập</a></li>
+                        <li><a th:href="@{/auth/register}">Đăng ký</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Copyright © 2025 K23CNT1 Store. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -19,6 +19,9 @@ public class NhnDonhangItem {
 
     @ManyToOne
     @JoinColumn(name = "nhn_donhang_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private NhnDonhang nhnDonhang;
 
     @ManyToOne

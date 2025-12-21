@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ Hàng - K23CNT1 Store</title>
+    <!-- Use Tailwind for rapid UI layout matching the reference -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css?v=11}">
+    <style>
+        /* Custom overrides to match site consistency if needed */
+        :root {
+            --primary-color: #A00000;
+        }
+
+        .btn-update {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-update:hover {
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- HEADER (Consistent with other pages) -->
+    <header class="header">
+        <div class="container nav-bar">
+            <div class="logo">
+                <a th:href="@{/nhnindex}">
+                    <img th:src="@{/images/logo.png}" alt="Minh Thủy Chè Lam Logo">
+                </a>
+            </div>
+            <nav class="nav-links">
+                <a th:href="@{/nhnindex}">Trang Chủ</a>
+                <a th:href="@{/nhnproducts}">Sản Phẩm</a>
+                <a th:href="@{/nhnabout}">Giới Thiệu</a>
+                <a th:href="@{/nhnnews}">Tin Tức</a>
+                <a th:href="@{/nhncontact}">Liên Hệ</a>
+
+                <a sec:authorize="isAuthenticated()" th:href="@{/nhndonhang}">Đơn Hàng</a>
+
+                <a th:href="@{/nhncart}" style="font-weight: bold; color: var(--primary-color);">
+                    <i class="fas fa-shopping-cart"></i> (<span
+                        th:text="${session.NHN_CART != null ? session.NHN_CART.size() : 0}">0</span>)
+                </a>
+
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/nhnadmin_dashboard}"
+                    style="color: var(--primary-color); font-weight: bold;">Quản Lý</a>
+
+                <a sec:authorize="!isAuthenticated()" th:href="@{/auth/login}">Đăng Nhập</a>
+                <a sec:authorize="!isAuthenticated()" th:href="@{/auth/register}">Đăng Ký</a>
+
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-logout">
+                        <span sec:authentication="name">User</span> (Thoát)
+                    </button>
+                </form>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-10 px-4 min-h-[60vh]">
+
+        <!-- Breadcrumb / Header Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Giỏ hàng của bạn</h1>
+            <p class="text-gray-500 mt-2">
+                Có <span th:text="${session.NHN_CART != null ? session.NHN_CART.size() : 0}"
+                    class="font-bold text-black">0</span> sản phẩm trong giỏ hàng
+            </p>
+            <div class="w-16 h-1 bg-black mx-auto mt-4"></div>
+        </div>
+
+        <!-- Empty Cart State -->
+        <div th:if="${cartItems == null || cartItems.isEmpty()}" class="text-center py-10">
+            <i class="fas fa-shopping-basket text-6xl text-gray-300 mb-4"></i>
+            <p class="text-xl text-gray-600 mb-6">Giỏ hàng của bạn đang trống.</p>
+            <a th:href="@{/nhnindex}"
+                class="inline-block bg-[#A00000] text-white px-6 py-3 rounded-md font-bold hover:bg-[#800000] transition duration-300">
+                TIẾP TỤC MUA SẮM
+            </a>
+        </div>
+
+        <!-- Cart Content Grid -->
+        <div th:if="${cartItems != null && !cartItems.isEmpty()}" class="flex flex-col lg:flex-row gap-8">
+
+            <!-- Left Column: Cart Items List -->
+            <div class="lg:w-2/3">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+
+                    <!-- Loop through items -->
+                    <div th:each="item : ${cartItems}"
+                        class="flex items-center p-6 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition duration-200">
+
+                        <!-- Image -->
+                        <div class="w-24 h-24 flex-shrink-0 border border-gray-200 rounded-md overflow-hidden">
+                            <img th:src="@{${item.imageUrl}}" alt="Product Image" class="w-full h-full object-cover">
+                        </div>
+
+                        <!-- Info -->
+                        <div class="ml-6 flex-grow">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="text-lg font-bold text-[#A00000]" th:text="${item.name}">Tên Sản Phẩm
+                                    </h3>
+                                    <p class="text-gray-500 text-sm mt-1"
+                                        th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + '₫'">0₫
+                                    </p>
+                                </div>
+                                <!-- Remove Button (X) -->
+                                <a th:href="@{/nhncart/remove/{id}(id=${item.productId})}"
+                                    class="text-gray-400 hover:text-red-600 transition duration-200"
+                                    title="Xóa sản phẩm">
+                                    <i class="fas fa-times text-xl"></i>
+                                </a>
+                            </div>
+
+                            <div class="flex justify-between items-end mt-4">
+                                <!-- Quantity Control Form -->
+                                <form th:action="@{/nhncart/update}" method="post" class="flex items-center">
+                                    <input type="hidden" name="productId" th:value="${item.productId}">
+
+                                    <div class="flex items-center border border-gray-300 rounded-md bg-white">
+                                        <!-- Decrease Button (Submit with decremented value logic handled by distinct buttons or JS? For simple form, we use JS or simple input) -->
+                                        <!-- Simple approach: Input with Update Button implicitly or change trigger -->
+                                        <!-- Let's try to mimic the UI with +/- buttons. For basic HTML form without JS complex logic: 
+                                             We can just use type="number" with styling, or small buttons that submit. 
+                                             To keep it robust without heavy JS, standard input + update button is safest, 
+                                             BUT user wants "Structure like link". The link has +/-. 
+                                             I will implement basic JS for +/- to update the input, then submit.
+                                        -->
+                                        <button type="button" onclick="updateQuantity(this, -1)"
+                                            class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold border-r border-gray-300">-</button>
+                                        <input type="number" name="quantity" th:value="${item.quantity}" min="1"
+                                            class="w-12 text-center py-1 focus:outline-none text-gray-700 font-medium"
+                                            readonly>
+                                        <button type="button" onclick="updateQuantity(this, 1)"
+                                            class="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold border-l border-gray-300">+</button>
+                                    </div>
+                                    <!-- Hidden submit button or Auto-submit on change? For safety, let's have a small Update link or rely on JS to submit on change -->
+                                    <button type="submit" class="ml-3 text-sm text-blue-600 hover:underline">Cập
+                                        nhật</button>
+                                </form>
+
+                                <!-- Total for Item -->
+                                <p class="font-bold text-gray-800"
+                                    th:text="${#numbers.formatDecimal(item.totalPrice, 0, 'COMMA', 0, 'POINT')} + '₫'">
+                                    0₫</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="mt-6">
+                    <a th:href="@{/nhnindex}"
+                        class="text-gray-600 hover:text-[#A00000] font-medium flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Column: Order Info -->
+            <div class="lg:w-1/3">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 sticky top-4">
+                    <h3 class="text-xl font-bold text-gray-800 border-b border-gray-200 pb-4 mb-4">Thông tin đơn hàng
+                    </h3>
+
+                    <div class="flex justify-between items-center mb-4 text-lg font-bold">
+                        <span class="text-gray-700">Tổng tiền:</span>
+                        <span class="text-[#A00000] text-2xl"
+                            th:text="${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')} + '₫'">0₫</span>
+                    </div>
+
+                    <p class="text-gray-500 text-sm mb-6">
+                        Phí vận chuyển sẽ được tính ở trang thanh toán.<br>
+                        Bạn cũng có thể nhập mã giảm giá ở bước tiếp theo.
+                    </p>
+
+                    <a th:href="@{/nhncheckout}"
+                        class="block w-full bg-[#A00000] text-white text-center font-bold py-3 rounded-md hover:bg-[#800000] transition duration-300 uppercase mb-3">
+                        Thanh toán
+                    </a>
+
+                    <div class="text-center">
+                        <span class="text-gray-400 text-xs">Hoặc</span>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER (Consistent) -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>CÔNG TY CỔ PHẦN SX TM SHT</h4>
+                    <p>Địa chỉ: Số 123, Đường XYZ, Quận ABC, TP Hà Nội.</p>
+                    <p>Mã số thuế: 0100000000</p>
+                    <p>Hotline: 0912 345 678</p>
+                    <p>Email: contact@k23cnt1.com</p>
+                </div>
+                <!-- ... (Other footer cols kept simple or full if preferred. Keeping concise for this view but matching style.css layout) -->
+                <div class="footer-column">
+                    <h4>Chính sách</h4>
+                    <ul>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Tài khoản</h4>
+                    <ul>
+                        <li><a th:href="@{/auth/login}">Đăng nhập</a></li>
+                        <li><a th:href="@{/auth/register}">Đăng ký</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Copyright © 2025 K23CNT1 Store. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script for Quantity Buttons -->
+    <script>
+        function updateQuantity(btn, change) {
+            const input = btn.parentElement.querySelector('input[type="number"]');
+            let currentValue = parseInt(input.value);
+            let newValue = currentValue + change;
+
+            if (newValue >= 1) {
+                input.value = newValue;
+                // Optional: Automatically submit form on change
+                // btn.closest('form').submit(); 
+                // Leaving manual 'Cập nhật' button click for now as it's safer for server load, 
+                // but user can click the 'Cập nhật' link.
+            }
+        }
+    </script>
+
+</body>
+
+</html>

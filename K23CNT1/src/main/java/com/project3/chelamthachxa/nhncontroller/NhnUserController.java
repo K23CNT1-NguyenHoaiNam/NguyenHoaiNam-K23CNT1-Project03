@@ -19,9 +19,8 @@ public class NhnUserController {
 
     // READ: Lấy tất cả người dùng
     @GetMapping
-    public ResponseEntity<List<NhnUser>> getAllUsers() {
-        List<NhnUser> nhnUsers = nhnUserService.findAllUsers();
-        return ResponseEntity.ok(nhnUsers);
+    public ResponseEntity<List<com.project3.chelamthachxa.nhndto.NhnUserDTO>> getAllUsers() {
+        return ResponseEntity.ok(nhnUserService.findAllUserDTOs());
     }
 
     // READ: Lấy người dùng theo ID

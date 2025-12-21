@@ -56,26 +56,38 @@ public class NhnSecurityConfig {
                         // 2. CHO PHÉP TRUY CẬP TẤT CẢ CÁC TÀI NGUYÊN TĨNH
                         .requestMatchers("/css/**", "/images/**").permitAll()
 
-                        // 3. Phân quyền rõ ràng cho các URL Auth Controller và trang chủ.
+                        // 3. Phân quyền rõ ràng cho các URL Auth Controller và trang chủ/sản phẩm/giới thiệu/liên hệ.
                         .requestMatchers(
-                                "/auth/**",           // Bao gồm /auth/login, /auth/register, và POST actions
-                                "/",                  // Trang chủ
-                                "/nhnproducts/**"        // Danh sách sản phẩm
+                                "/auth/**",                // Bao gồm /auth/login, /auth/register, và POST actions
+                                "/",                       // Đường dẫn gốc
+                                "/nhnindex",               // Trang chủ
+                                "/nhnproducts/**",         // Danh sách sản phẩm
+                                "/nhnabout",               // Trang giới thiệu
+                                "/nhncontact"              // Trang liên hệ
                         ).permitAll()
 
-                        // 4. Chỉ cho phép ADMIN truy cập các chức năng quản lý (CRUD)
+
+                        // 4. Quản lý quyền truy cập API Sản phẩm
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll() // Ai cũng xem được sản phẩm
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+
+                        // 5. Chỉ cho phép ADMIN truy cập các chức năng quản lý khác
                         .requestMatchers(
                                 "/api/admin/**",
-                                "/admin/**"
+                                "/admin/**",
+                                "/api/orders/admin/**" // API quản lý đơn hàng cho Admin
                         ).hasRole("ADMIN")
 
-                        // 5. Yêu cầu xác thực cho tất cả các request khác
+                        // 6. Yêu cầu xác thực cho tất cả các request khác (bao gồm đặt hàng, xem đơn hàng cá nhân)
                         .anyRequest().authenticated()
                 )
 
                 .formLogin(form -> form
                         // Trỏ đến URL Controller chính xác
                         .loginPage("/auth/login")
+                        // Chuyển hướng đến trang chủ sau khi đăng nhập thành công
                         .defaultSuccessUrl("/nhnindex", true)
                         .failureUrl("/auth/login?error=true")
                         .permitAll()

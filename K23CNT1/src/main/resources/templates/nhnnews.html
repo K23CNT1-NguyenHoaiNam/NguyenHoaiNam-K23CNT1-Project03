@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tin Tức - K23CNT1 Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css?v=11}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container nav-bar">
+            <div class="logo">
+                <a th:href="@{/nhnindex}">
+                    <img th:src="@{/images/logo.png}" alt="Minh Thủy Chè Lam Logo">
+                </a>
+            </div>
+            <nav class="nav-links">
+                <a th:href="@{/nhnindex}">Trang Chủ</a>
+                <a th:href="@{/nhnproducts}">Sản Phẩm</a>
+                <a th:href="@{/nhnabout}">Giới Thiệu</a>
+                <a th:href="@{/nhnnews}" style="color: var(--primary-color); font-weight: bold;">Tin Tức</a>
+                <a th:href="@{/nhncontact}">Liên Hệ</a>
+
+                <a sec:authorize="isAuthenticated()" th:href="@{/nhndonhang}">Đơn Hàng</a>
+
+                <a th:href="@{/nhncart}" style="font-weight: bold;">
+                    <i class="fas fa-shopping-cart"></i> (<span
+                        th:text="${session.NHN_CART != null ? session.NHN_CART.size() : 0}">0</span>)
+                </a>
+
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/nhnadmin_dashboard}"
+                    style="color: var(--primary-color); font-weight: bold;">Quản Lý</a>
+
+                <a sec:authorize="!isAuthenticated()" th:href="@{/auth/login}">Đăng Nhập</a>
+                <a sec:authorize="!isAuthenticated()" th:href="@{/auth/register}">Đăng Ký</a>
+
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-logout">
+                        <span sec:authentication="name">User</span> (Thoát)
+                    </button>
+                </form>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="container mx-auto py-10 px-4">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-[#A00000] uppercase">Tin Tức & Sự Kiện</h1>
+            <div class="w-20 h-1 bg-[#A00000] mx-auto mt-2"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <!-- News Item 1: Hanoimoi -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <a href="https://nhipsonghanoi.hanoimoi.vn/che-lam-thach-xa-mon-qua-que-hap-dan-445445.html"
+                    target="_blank">
+                    <img th:src="@{/images/gioithieu1.jpg}" alt="Chè lam Thạch Xá"
+                        class="w-full h-48 object-cover hover:scale-105 transition-transform duration-500">
+                </a>
+                <div class="p-5">
+                    <p class="text-gray-500 text-sm mb-2"><i class="far fa-newspaper"></i> Hanoimoi</p>
+                    <h3
+                        class="text-xl font-bold mb-3 text-gray-800 hover:text-[#A00000] transition h-16 overflow-hidden">
+                        <a href="https://nhipsonghanoi.hanoimoi.vn/che-lam-thach-xa-mon-qua-que-hap-dan-445445.html"
+                            target="_blank">Chè lam Thạch Xá - “món quà quê” hấp dẫn</a>
+                    </h3>
+                    <p class="text-gray-600 line-clamp-3 mb-4 h-20">
+                        Những ngày đầu xuân, không khí sản xuất ở làng nghề chè lam Thạch Xá lại rộn ràng. Chè lam là
+                        món ăn bình dân, được chế biến bởi những nguyên liệu thân thuộc...
+                    </p>
+                    <a href="https://nhipsonghanoi.hanoimoi.vn/che-lam-thach-xa-mon-qua-que-hap-dan-445445.html"
+                        target="_blank" class="text-[#A00000] font-bold hover:underline">ĐỌC TIẾP <i
+                            class="fas fa-arrow-right text-xs"></i></a>
+                </div>
+            </div>
+
+            <!-- News Item 2: VietnamPlus -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <a href="https://www.vietnamplus.vn/che-lam-thach-xa-mon-qua-dan-da-mang-dam-huong-vi-lang-que-post567623.vnp"
+                    target="_blank">
+                    <img th:src="@{/images/nguyenlieu.jpg}" alt="Hương vị làng quê"
+                        class="w-full h-48 object-cover hover:scale-105 transition-transform duration-500">
+                </a>
+                <div class="p-5">
+                    <p class="text-gray-500 text-sm mb-2"><i class="far fa-newspaper"></i> VietnamPlus</p>
+                    <h3
+                        class="text-xl font-bold mb-3 text-gray-800 hover:text-[#A00000] transition h-16 overflow-hidden">
+                        <a href="https://www.vietnamplus.vn/che-lam-thach-xa-mon-qua-dan-da-mang-dam-huong-vi-lang-que-post567623.vnp"
+                            target="_blank">Chè lam Thạch Xá - Món quà dân dã đậm vị quê</a>
+                    </h3>
+                    <p class="text-gray-600 line-clamp-3 mb-4 h-20">
+                        Chè lam Thạch Xá được làm từ những nguyên liệu hoàn toàn tự nhiên với những công đoạn đòi hỏi sự
+                        tỉ mỉ và nhạy cảm hương vị của người nghệ nhân.
+                    </p>
+                    <a href="https://www.vietnamplus.vn/che-lam-thach-xa-mon-qua-dan-da-mang-dam-huong-vi-lang-que-post567623.vnp"
+                        target="_blank" class="text-[#A00000] font-bold hover:underline">ĐỌC TIẾP <i
+                            class="fas fa-arrow-right text-xs"></i></a>
+                </div>
+            </div>
+
+            <!-- News Item 3: SCOV -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <a href="https://scov.gov.vn/ban-sac-van-hoa/che-lam-thach-xa.html" target="_blank">
+                    <img th:src="@{/images/thanhpham.jpg}" alt="Bản sắc văn hóa"
+                        class="w-full h-48 object-cover hover:scale-105 transition-transform duration-500">
+                </a>
+                <div class="p-5">
+                    <p class="text-gray-500 text-sm mb-2"><i class="far fa-newspaper"></i> SCOV</p>
+                    <h3
+                        class="text-xl font-bold mb-3 text-gray-800 hover:text-[#A00000] transition h-16 overflow-hidden">
+                        <a href="https://scov.gov.vn/ban-sac-van-hoa/che-lam-thach-xa.html" target="_blank">Chè lam
+                            Thạch Xá - Sản phẩm làng nghề truyền thống</a>
+                    </h3>
+                    <p class="text-gray-600 line-clamp-3 mb-4 h-20">
+                        Là một trong những sản phẩm được cấp bằng bảo hộ sở hữu trí tuệ (2015), chè lam Thạch Xá đã và
+                        đang vươn xa ra thị trường trong và ngoài nước.
+                    </p>
+                    <a href="https://scov.gov.vn/ban-sac-van-hoa/che-lam-thach-xa.html" target="_blank"
+                        class="text-[#A00000] font-bold hover:underline">ĐỌC TIẾP <i
+                            class="fas fa-arrow-right text-xs"></i></a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    <!-- FOOTER -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>CÔNG TY CỔ PHẦN SX TM SHT</h4>
+                    <p>Địa chỉ: Số 123, Đường XYZ, Quận ABC, TP Hà Nội.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Chính sách</h4>
+                    <ul>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">Chính sách đổi trả</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Tài khoản</h4>
+                    <ul>
+                        <li><a th:href="@{/auth/login}">Đăng nhập</a></li>
+                        <li><a th:href="@{/auth/register}">Đăng ký</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Copyright © 2025 K23CNT1 Store. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

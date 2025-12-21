@@ -121,6 +121,7 @@
                     <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
                     <nonFilteredFileExtension>woff</nonFilteredFileExtension>
                     <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
+                    <nonFilteredFileExtension>mp4</nonFilteredFileExtension>
                 </nonFilteredFileExtensions>
             </configuration>
         </plugin>

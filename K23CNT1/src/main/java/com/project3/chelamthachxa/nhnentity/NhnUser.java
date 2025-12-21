@@ -52,6 +52,9 @@ public class NhnUser implements UserDetails {
     // Thêm quan hệ với Đơn hàng (1 NhnUser có nhiều NhnDonhang)
     // SỬA: Chuyển từ List sang Set
     @OneToMany(mappedBy = "nhnUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore // Prevent infinite recursion
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private Set<NhnDonhang> nhnDonhangs; // ĐÃ SỬA: Dùng Set
 
     // --------------------------------------------------------------------------------

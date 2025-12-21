@@ -1,195 +1,318 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>K23CNT1 Store - Món ngon truyền thống</title>
     <!-- Liên kết đến file CSS tĩnh đã được cập nhật -->
-    <link rel="stylesheet" th:href="@{/css/style.css?v=10}">
+    <link rel="stylesheet" th:href="@{/css/style.css?v=12}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
 
-<header class="header">
-    <div class="container nav-bar">
-        <!-- Header/Navigation đã được xác nhận là hiển thị đúng -->
-        <div class="logo">
-            <a th:href="@{/nhnindex}">
-                <!-- SỬ DỤNG THẺ IMG CHO LOGO -->
-                <img th:src="@{/images/logo.png}" alt="Minh Thủy Chè Lam Logo">
-            </a>
+    <header class="header">
+        <div class="container nav-bar">
+            <!-- Header/Navigation đã được xác nhận là hiển thị đúng -->
+            <div class="logo">
+                <a th:href="@{/nhnindex}">
+                    <!-- SỬ DỤNG THẺ IMG CHO LOGO -->
+                    <img th:src="@{/images/logo.png}" alt="Minh Thủy Chè Lam Logo">
+                </a>
+            </div>
+            <nav class="nav-links">
+                <!-- ĐÁNH DẤU TRANG HIỆN TẠI -->
+                <a th:href="@{/nhnindex}" style="color: var(--primary-color); font-weight: bold;">Trang Chủ</a>
+                <a th:href="@{/nhnproducts}">Sản Phẩm</a>
+                <a th:href="@{/nhnabout}">Giới Thiệu</a>
+                <a th:href="@{/nhnnews}">Tin Tức</a>
+                <a th:href="@{/nhncontact}">Liên Hệ</a>
+
+                <a sec:authorize="isAuthenticated()" th:href="@{/nhndonhang}">Đơn Hàng</a>
+
+                <a th:href="@{/nhncart}" style="font-weight: bold;">
+                    <i class="fas fa-shopping-cart"></i> (<span
+                        th:text="${session.NHN_CART != null ? session.NHN_CART.size() : 0}">0</span>)
+                </a>
+
+                <!-- Liên kết quản lý chỉ hiển thị cho ADMIN -->
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/nhnadmin_dashboard}"
+                    style="color: var(--primary-color); font-weight: bold;">Quản Lý</a>
+
+                <!-- Links cho người dùng chưa đăng nhập -->
+                <a sec:authorize="!isAuthenticated()" th:href="@{/auth/login}">Đăng Nhập</a>
+                <a sec:authorize="!isAuthenticated()" th:href="@{/auth/register}">Đăng Ký</a>
+
+                <!-- Form Logout cho người dùng đã đăng nhập -->
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-logout">
+                        <span sec:authentication="name">User</span> (Thoát)
+                    </button>
+                </form>
+            </nav>
         </div>
-        <nav class="nav-links">
-            <a th:href="@{/nhnindex}">Trang Chủ</a>
-            <a th:href="@{/nhnproducts}">Sản Phẩm</a>
-            <a href="#">Giới Thiệu</a>
-            <a href="#">Liên Hệ</a>
+    </header>
 
-            <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/dashboard}" style="color: var(--primary-color); font-weight: bold;">Quản Lý</a>
-
-            <a sec:authorize="!isAuthenticated()" th:href="@{/auth/login}">Đăng Nhập</a>
-            <a sec:authorize="!isAuthenticated()" th:href="@{/auth/register}">Đăng Ký</a>
-
-            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
-                <button type="submit" class="btn-logout">
-                    <span sec:authentication="name">User</span> (Thoát)
-                </button>
-            </form>
-        </nav>
-    </div>
-</header>
-
-<div class="hero-banner">
-    <div class="container">
-        <h1>CHÈ LAM TRUYỀN THỐNG VIỆT NAM</h1>
-        <p>Sản phẩm chất lượng cao, giữ trọn hương vị tuổi thơ. Đặt hàng ngay hôm nay!</p>
-    </div>
-</div>
-
-<main class="container">
-
-    <h2 class="section-title">SẢN PHẨM NỔI BẬT</h2>
-
-    <!-- Product Grid -->
-    <div class="product-grid">
-        <!-- Dữ liệu sản phẩm mẫu -->
-        <div class="product-card">
-            <div class="product-image-container">
-                <img th:src="@{/images/product_01.jpg?v=10}" alt="Chè Lam Thường 300g" class="product-image">
-            </div>
-            <div class="product-info">
-                <h3>Hộp Chè Lam Thường 300g</h3>
-                <p class="product-price">25.000 VND</p>
-                <button class="btn-buy">Thêm vào giỏ</button>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image-container">
-                <img th:src="@{/images/product_02.jpg?v=10}" alt="Chè Lam Quai Sách 1kg" class="product-image">
-            </div>
-            <div class="product-info">
-                <h3>Hộp Chè Lam Quai Sách (Thường) 1Kg</h3>
-                <p class="product-price">100.000 VND</p>
-                <button class="btn-buy">Thêm vào giỏ</button>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image-container">
-                <img th:src="@{/images/product_03.jpg?v=10}" alt="Chè Lam Thường 500g" class="product-image">
-            </div>
-            <div class="product-info">
-                <h3>Hộp Chè Lam Thường 500g</h3>
-                <p class="product-price">35.000 VND</p>
-                <button class="btn-buy">Thêm vào giỏ</button>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image-container">
-                <img th:src="@{/images/product_04.jpg?v=10}" alt="Chè Lam Me Đen 500g" class="product-image">
-            </div>
-            <div class="product-info">
-                <h3>Hộp Chè Lam Mè Đen 500g</h3>
-                <p class="product-price">45.000 VND</p>
-                <button class="btn-buy">Thêm vào giỏ</button>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image-container">
-                <img th:src="@{/images/product_05.jpg?v=10}" alt="Chè Lam Me Trắng 500g" class="product-image">
-            </div>
-            <div class="product-info">
-                <h3>Hộp Chè Lam Mè Trắng 500g</h3>
-                <p class="product-price">45.000 VND</p>
-                <button class="btn-buy">Thêm vào giỏ</button>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image-container">
-                <img th:src="@{/images/product_06.jpg?v=10}" alt="Chè Lam Quai Sách Mè Đen 1kg" class="product-image">
-            </div>
-            <div class="product-info">
-                <h3>Hộp Chè Lam Quai Sách (Mè Đen) 1Kg</h3>
-                <p class="product-price">120.000 VND</p>
-                <button class="btn-buy">Thêm vào giỏ</button>
-            </div>
-        </div>
-
-        <!-- ... thêm các sản phẩm khác ... -->
-
-    </div>
-
-    <!-- KHỐI GIỚI THIỆU (VỀ CHÚNG TÔI) -->
-    <div class="about-section">
-        <div class="about-media">
-            <img th:src="@{/images/gioithieu.png}" alt="Hình ảnh giới thiệu" />
-        </div>
-        <div class="about-content">
-            <h2>VỀ CHÚNG TÔI</h2>
-            <p>
-                Thương hiệu Chè Lam Thạch Xá ra đời từ tâm huyết gìn giữ tinh hoa ẩm thực truyền thống. Chúng tôi không chỉ bán sản phẩm, mà còn gửi gắm hương vị tuổi thơ và nét đẹp văn hóa Việt Nam.
-            </p>
-            <p>
-                Mỗi chiếc bánh chè lam được làm thủ công 100% từ những nguyên liệu tuyển chọn kỹ lưỡng: Gạo nếp cái hoa vàng, mạch nha, gừng tươi và lạc rang. Quá trình làm bánh được kiểm soát nghiêm ngặt để đảm bảo chất lượng, độ dẻo thơm tự nhiên và an toàn vệ sinh thực phẩm.
-            </p>
-            <p>
-                Chúng tôi cam kết mang đến những sản phẩm tốt nhất, phục vụ cho những người yêu thích hương vị truyền thống và những giá trị đích thực.
-            </p>
-            <a href="#" class="btn-readmore">ĐỌC THÊM VỀ CHÚNG TÔI</a>
+    <div class="hero-banner">
+        <video autoplay muted loop playsinline class="hero-video">
+            <source th:src="@{/images/gioithieu_video.mp4}" type="video/mp4">
+            <!-- Fallback image defined in CSS -->
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <h1>CHÈ LAM TRUYỀN THỐNG VIỆT NAM</h1>
+            <p>Sản phẩm chất lượng cao, giữ trọn hương vị tuổi thơ. Đặt hàng ngay hôm nay!</p>
         </div>
     </div>
 
-</main>
+    <main class="container">
 
-<!-- ======================================================= -->
-<!-- FOOTER SECTION - CẤU TRÚC 3 CỘT MÔ PHỎNG NGUYENSON.VN -->
-<!-- ======================================================= -->
-<footer class="footer-section">
-    <div class="container">
-        <div class="footer-grid">
+        <h2 class="section-title">SẢN PHẨM NỔI BẬT</h2>
 
-            <!-- CỘT 1: VỀ CÔNG TY -->
-            <div class="footer-column">
-                <h4>CÔNG TY CỔ PHẦN SX TM SHT</h4>
-                <p>Địa chỉ: Số 123, Đường XYZ, Quận ABC, TP Hà Nội.</p>
-                <p>Mã số thuế: 0100000000</p>
-                <p>Hotline: 0912 345 678</p>
-                <p>Email: contact@k23cnt1.com</p>
+        <!-- Product Grid -->
+        <div class="product-grid">
+            <div class="product-card" th:each="product : ${nhnproducts}">
+                <div class="product-image-container">
+                    <img th:src="@{${product.imageUrl}}" th:alt="${product.tenSanPham}" class="product-image"
+                        onerror="this.onerror=null; this.src='/images/logo.png';">
+                </div>
+                <div class="product-info">
+                    <h3 th:text="${product.tenSanPham}">Tên Sản Phẩm</h3>
+                    <div class="product-price"
+                        th:text="${#numbers.formatDecimal(product.gia, 0, 'COMMA', 0, 'POINT')} + ' VND'">Giá</div>
+                    <button th:onclick="'addToCart(' + ${product.id} + ')'" class="btn-buy">Thêm vào giỏ</button>
+                </div>
             </div>
-
-            <!-- CỘT 2: CHÍNH SÁCH -->
-            <div class="footer-column">
-                <h4>Chính sách</h4>
-                <ul>
-                    <li><a href="#">Chính sách bảo mật</a></li>
-                    <li><a href="#">Chính sách đổi trả</a></li>
-                    <li><a href="#">Chính sách giao hàng</a></li>
-                    <li><a href="#">Điều khoản sử dụng</a></li>
-                </ul>
-            </div>
-
-            <!-- CỘT 3: TÀI KHOẢN -->
-            <div class="footer-column">
-                <h4>Tài khoản</h4>
-                <ul>
-                    <li><a th:href="@{/auth/login}">Đăng nhập</a></li>
-                    <li><a th:href="@{/auth/register}">Đăng ký</a></li>
-                    <li><a href="#">Quản lý đơn hàng</a></li>
-                    <li><a href="#">Hỗ trợ khách hàng</a></li>
-                </ul>
-            </div>
-
         </div>
 
-        <div class="footer-bottom">
-            <p>Copyright © 2025 K23CNT1 Store. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
+        <!-- KHỐI GIỚI THIỆU (VỀ CHÚNG TÔI) -->
+        <div class="about-section">
+            <div class="about-media" style="position: relative; overflow: hidden;">
+                <!-- Carousel Container -->
+                <div id="aboutCarousel" style="position: relative; width: 100%; height: 100%;">
 
+                    <!-- Slide 1: Image -->
+                    <div class="carousel-item active"
+                        style="display: block; width: 100%; height: 100%; transition: opacity 0.5s;">
+                        <img th:src="@{/images/gioithieu.png}" alt="Hình ảnh giới thiệu"
+                            style="width: 100%; height: 100%; object-fit: cover;" />
+                    </div>
+
+                    <!-- Slide 2: Video (Placeholder) -->
+                    <div class="carousel-item"
+                        style="display: none; width: 100%; height: 100%; transition: opacity 0.5s;">
+                        <video id="aboutVideo" muted controls style="width: 100%; height: 100%; object-fit: cover;">
+                            <source th:src="@{/images/gioithieu_video.mp4}" type="video/mp4">
+                            Trình duyệt của bạn không hỗ trợ thẻ video.
+                        </video>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <button onclick="prevSlide()"
+                        style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 10px; cursor: pointer; border-radius: 50%; z-index: 10;">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button onclick="nextSlide()"
+                        style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; padding: 10px; cursor: pointer; border-radius: 50%; z-index: 10;">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="about-content">
+                <h2>VỀ CHÚNG TÔI</h2>
+                <p>
+                    Thương hiệu Chè Lam Thạch Xá ra đời từ tâm huyết gìn giữ tinh hoa ẩm thực truyền thống. Chúng tôi
+                    không chỉ bán sản phẩm, mà còn gửi gắm hương vị tuổi thơ và nét đẹp văn hóa Việt Nam.
+                </p>
+                <p>
+                    Mỗi chiếc bánh chè lam được làm thủ công 100% từ những nguyên liệu tuyển chọn kỹ lưỡng: Gạo nếp cái
+                    hoa vàng, mạch nha, gừng tươi và lạc rang. Quá trình làm bánh được kiểm soát nghiêm ngặt để đảm bảo
+                    chất lượng, độ dẻo thơm tự nhiên và an toàn vệ sinh thực phẩm.
+                </p>
+                <p>
+                    Chúng tôi cam kết mang đến những sản phẩm tốt nhất, phục vụ cho những người yêu thích hương vị
+                    truyền thống và những giá trị đích thực.
+                </p>
+                <a th:href="@{/nhnproducts}" class="btn-readmore">ĐỌC THÊM VỀ CHÚNG TÔI</a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Carousel Script -->
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.carousel-item');
+        const videoElement = document.getElementById('aboutVideo');
+        const totalSlides = slides.length; // Should be 2 (Image, Video)
+        let imageTimer = null;
+
+        function showSlide(index) {
+            // Hide all slides
+            slides.forEach(slide => {
+                slide.style.display = 'none';
+                slide.classList.remove('active');
+            });
+
+            // Show target slide
+            slides[index].style.display = 'block';
+            slides[index].classList.add('active');
+            currentSlideIndex = index;
+
+            handleSlideContent(index);
+        }
+
+        function nextSlide() {
+            let nextIndex = (currentSlideIndex + 1) % totalSlides;
+            showSlide(nextIndex);
+        }
+
+        function prevSlide() {
+            let prevIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
+            showSlide(prevIndex);
+        }
+
+        function handleSlideContent(index) {
+            // Clear any existing timer
+            if (imageTimer) clearTimeout(imageTimer);
+
+            // Pause video if moving away from it
+            if (index !== 1) {
+                videoElement.pause();
+                videoElement.currentTime = 0;
+            }
+
+            if (index === 0) {
+                // Image Slide
+                // Auto switch to video after 5 seconds
+                imageTimer = setTimeout(() => {
+                    nextSlide();
+                }, 5000);
+            } else if (index === 1) {
+                // Video Slide
+                // Play video
+                videoElement.play().catch(e => console.log("Auto-play prevented:", e));
+            }
+        }
+
+        // Setup Video Ended Event
+        videoElement.onended = function () {
+            nextSlide(); // Switch back to image when video ends
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start with slide 0
+            showSlide(0);
+        });
+    </script>
+
+    <!-- ======================================================= -->
+    <!-- FOOTER SECTION - CẤU TRÚC 3 CỘT MÔ PHỎNG NGUYENSON.VN -->
+    <!-- ======================================================= -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-grid">
+
+                <!-- CỘT 1: VỀ CÔNG TY -->
+                <div class="footer-column">
+                    <h4>CÔNG TY CỔ PHẦN SX TM SHT</h4>
+                    <p>Địa chỉ: Số 123, Đường XYZ, Quận ABC, TP Hà Nội.</p>
+                    <p>Mã số thuế: 0100000000</p>
+                    <p>Hotline: 0912 345 678</p>
+                    <p>Email: contact@k23cnt1.com</p>
+                </div>
+
+                <!-- CỘT 2: CHÍNH SÁCH -->
+                <div class="footer-column">
+                    <h4>Chính sách</h4>
+                    <ul>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">Chính sách đổi trả</a></li>
+                        <li><a href="#">Chính sách giao hàng</a></li>
+                        <li><a href="#">Điều khoản sử dụng</a></li>
+                    </ul>
+                </div>
+
+                <!-- CỘT 3: TÀI KHOẢN -->
+                <div class="footer-column">
+                    <h4>Tài khoản</h4>
+                    <ul>
+                        <li><a th:href="@{/auth/login}">Đăng nhập</a></li>
+                        <li><a th:href="@{/auth/register}">Đăng ký</a></li>
+                        <li><a href="#">Quản lý đơn hàng</a></li>
+                        <li><a href="#">Hỗ trợ khách hàng</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>Copyright © 2025 K23CNT1 Store. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AJAX Add to Cart Script -->
+    <script>
+        function addToCart(productId) {
+            // Prevent default link action
+            event.preventDefault();
+
+            fetch('/api/cart/add?productId=' + productId + '&quantity=1', {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateMiniCart(data);
+                        // Show mini cart
+                        const wrapper = document.querySelector('.mini-cart-wrapper');
+                        wrapper.classList.add('active');
+                        setTimeout(() => wrapper.classList.remove('active'), 3000); // Hide after 3s
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+
+            return false;
+        }
+
+        function updateMiniCart(data) {
+            // Update Count
+            document.getElementById('cart-count').innerText = data.totalItems;
+
+            // Update Total
+            // Format currency: data.totalAmount is number
+            const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.totalAmount);
+            document.getElementById('mini-cart-total-amount').innerText = formattedTotal;
+
+            // Update Items List
+            const itemsContainer = document.getElementById('mini-cart-items');
+            itemsContainer.innerHTML = ''; // Clear current
+
+            if (data.cartItems && data.cartItems.length > 0) {
+                data.cartItems.forEach(item => {
+                    const itemHtml = `
+                        <div class="mini-cart-item">
+                             <img src="${item.imageUrl}" alt="Product">
+                             <div class="mini-cart-item-info">
+                                 <span class="mini-cart-item-name">${item.name}</span>
+                                 <span class="mini-cart-item-price">
+                                    ${item.quantity} x 
+                                    ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                                 </span>
+                             </div>
+                        </div>
+                    `;
+                    itemsContainer.insertAdjacentHTML('beforeend', itemHtml);
+                });
+            } else {
+                itemsContainer.innerHTML = '<div style="text-align:center; padding: 20px; color:#999;">Giỏ hàng trống</div>';
+            }
+        }
+    </script>
 </body>
+
 </html>

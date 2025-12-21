@@ -1,65 +1,220 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Sản Phẩm</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Thêm lại link CSS đầy đủ -->
+    <link rel="stylesheet" th:href="@{/css/style.css?v=11}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
 
-<header class="header">
-    <div class="container nav-bar">
-        <div class="logo">
-            <a th:href="@{/}">K23CNT1</a>
+    <header class="header">
+        <div class="container nav-bar">
+            <!-- Header/Navigation (Đã đồng bộ) -->
+            <div class="logo">
+                <a th:href="@{/nhnindex}">
+                    <!-- SỬ DỤNG THẺ IMG CHO LOGO -->
+                    <img th:src="@{/images/logo.png}" alt="Minh Thủy Chè Lam Logo">
+                </a>
+            </div>
+            <nav class="nav-links">
+                <a th:href="@{/nhnindex}">Trang Chủ</a>
+                <a th:href="@{/nhnproducts}" style="color: var(--primary-color); font-weight: bold;">Sản Phẩm</a>
+                <a th:href="@{/nhnabout}">Giới Thiệu</a>
+                <a th:href="@{/nhnnews}">Tin Tức</a>
+                <a th:href="@{/nhncontact}">Liên Hệ</a>
+
+                <a sec:authorize="isAuthenticated()" th:href="@{/nhndonhang}">Đơn Hàng</a>
+
+                <!-- Mini Cart Wrapper -->
+                <div class="mini-cart-wrapper">
+                    <a th:href="@{/nhncart}" style="font-weight: bold;" id="cart-icon-link">
+                        <i class="fas fa-shopping-cart"></i> (<span id="cart-count"
+                            th:text="${session.NHN_CART != null ? session.NHN_CART.size() : 0}">0</span>)
+                    </a>
+
+                    <!-- Mini Cart Dropdown -->
+                    <div class="mini-cart-dropdown" id="mini-cart-dropdown">
+                        <div class="mini-cart-header">Giỏ Hàng</div>
+                        <div class="mini-cart-items" id="mini-cart-items">
+                            <!-- Items will be populated by JS or Thymeleaf -->
+                            <div th:if="${session.NHN_CART == null || session.NHN_CART.empty}"
+                                style="text-align:center; padding: 20px; color:#999;">
+                                Giỏ hàng trống
+                            </div>
+                            <div th:each="item : ${session.NHN_CART}" class="mini-cart-item">
+                                <img th:src="@{${item.imageUrl}}" alt="Product">
+                                <div class="mini-cart-item-info">
+                                    <span class="mini-cart-item-name" th:text="${item.name}">Product</span>
+                                    <span class="mini-cart-item-price">
+                                        <span th:text="${item.quantity}">1</span> x
+                                        <span
+                                            th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + '₫'">100.000₫</span>
+                                    </span>
+                                </div>
+                                <a th:href="@{/nhncart/remove/{id}(id=${item.productId})}"
+                                    class="text-red-500 hover:text-red-700"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+
+                        <div class="mini-cart-total">
+                            <span>TỔNG TIỀN:</span>
+                            <span id="mini-cart-total-amount">...</span>
+                        </div>
+
+                        <div class="mini-cart-buttons">
+                            <a th:href="@{/nhncart}" class="btn-view-cart">XEM GIỎ HÀNG</a>
+                            <a th:href="@{/nhncheckout}" class="btn-checkout">THANH TOÁN</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liên kết quản lý chỉ hiển thị cho ADMIN -->
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/nhnadmin_dashboard}"
+                    style="color: var(--primary-color); font-weight: bold;">Quản Lý</a>
+
+                <a sec:authorize="!isAuthenticated()" th:href="@{/auth/login}">Đăng Nhập</a>
+                <a sec:authorize="!isAuthenticated()" th:href="@{/auth/register}">Đăng Ký</a>
+
+                <!-- Form Logout cho người dùng đã đăng nhập -->
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn-logout">
+                        <span sec:authentication="name">User</span> (Thoát)
+                    </button>
+                </form>
+            </nav>
         </div>
-        <nav class="nav-links">
-            <a th:href="@{/nhnindex}">Trang Chủ</a>
-            <a th:href="@{/nhnproducts}">Sản Phẩm</a>
-            <a href="#">Giới Thiệu</a>
-            <a href="#">Liên Hệ</a>
-            <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}" th:href="@{/admin/dashboard}" style="color: var(--primary-color); font-weight: bold;">Quản Lý</a>
-            <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" style="display: inline;">
-                <button type="submit" class="btn-logout">Thoát</button>
-            </form>
-        </nav>
-    </div>
-</header>
+    </header>
 
-<main class="container">
+    <main class="container">
 
-    <h1 class="section-title">TẤT CẢ SẢN PHẨM</h1>
+        <h1 class="section-title">TẤT CẢ SẢN PHẨM</h1>
 
-    <div class="product-grid">
+        <div class="product-grid">
 
-        <div class="product-card" th:each="product : ${nhnproducts}">
-            <div class="product-image-container">
-                <img th:src="@{${product.imageUrl} + '?v=13'}"
-                     th:alt="${product.tenSanPham}"
-                     class="product-image"
-                     onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';"> </div>
-            <div class="product-info">
-                <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
+            <div class="product-card" th:each="product : ${nhnproducts}">
+                <div class="product-image-container">
+                    <img th:src="@{${product.imageUrl} + '?v=13'}" th:alt="${product.tenSanPham}" class="product-image"
+                        onerror="this.onerror=null; this.src='/images/placeholder.jpg';">
+                </div>
+                <div class="product-info">
+                    <h3 th:text="${product.tenSanPham}">Tên sản phẩm</h3>
 
-                <p class="product-price" th:text="${#numbers.formatDecimal(product.gia, 0, 'POINT', 0, 'COMMA') + ' VND'}">Giá</p>
+                    <!-- Định dạng tiền tệ VND -->
+                    <p class="product-price"
+                        th:text="${#numbers.formatDecimal(product.gia, 0, 'POINT', 0, 'COMMA') + ' VND'}">Giá</p>
 
-                <p th:text="'Kho: ' + ${product.soLuongTon}"></p>
-                <button class="btn-buy">Xem chi tiết</button>
+                    <p th:text="'Kho: ' + ${product.soLuongTon}"></p>
+                    <!-- Nút này nên dẫn đến trang chi tiết hoặc thêm vào giỏ hàng (khi có giỏ hàng) -->
+                    <button th:onclick="'addToCart(' + ${product.id} + ')'" class="btn-buy">Thêm vào giỏ</button>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(nhnproducts)}" style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+                <p>Hiện tại không có sản phẩm nào trong cửa hàng.</p>
             </div>
         </div>
+    </main>
 
-        <div th:if="${#lists.isEmpty(nhnproducts)}" style="grid-column: 1 / -1; text-align: center; padding: 50px;">
-            <p>Hiện tại không có sản phẩm nào trong cửa hàng.</p>
+    <!-- FOOTER SECTION (Đã đồng bộ) -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-grid">
+
+                <!-- CỘT 1: VỀ CÔNG TY -->
+                <div class="footer-column">
+                    <h4>CÔNG TY CỔ PHẦN SX TM SHT</h4>
+                    <p>Địa chỉ: Số 123, Đường XYZ, Quận ABC, TP Hà Nội.</p>
+                    <p>Mã số thuế: 0100000000</p>
+                    <p>Hotline: 0912 345 678</p>
+                    <p>Email: contact@k23cnt1.com</p>
+                </div>
+
+                <!-- CỘT 2: CHÍNH SÁCH -->
+                <div class="footer-column">
+                    <h4>Chính sách</h4>
+                    <ul>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">Chính sách đổi trả</a></li>
+                        <li><a href="#">Chính sách giao hàng</a></li>
+                        <li><a href="#">Điều khoản sử dụng</a></li>
+                    </ul>
+                </div>
+
+                <!-- CỘT 3: TÀI KHOẢN -->
+                <div class="footer-column">
+                    <h4>Tài khoản</h4>
+                    <ul>
+                        <li><a th:href="@{/auth/login}">Đăng nhập</a></li>
+                        <li><a th:href="@{/auth/register}">Đăng ký</a></li>
+                        <li><a href="#">Quản lý đơn hàng</a></li>
+                        <li><a href="#">Hỗ trợ khách hàng</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>Copyright © 2025 K23CNT1 Store. All rights reserved.</p>
+            </div>
         </div>
-    </div>
-</main>
+    </footer>
 
-<footer class="footer" style="text-align: center; padding: 20px; background: #333; color: white; margin-top: 50px;">
-    <div class="container">
-        <p>&copy; 2025 K23CNT1 Store.</p>
-    </div>
-</footer>
+    <!-- AJAX Add to Cart Script -->
+    <script>
+        function addToCart(productId) {
+            event.preventDefault();
 
+            fetch('/api/cart/add?productId=' + productId + '&quantity=1', {
+                method: 'POST'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateMiniCart(data);
+                        const wrapper = document.querySelector('.mini-cart-wrapper');
+                        wrapper.classList.add('active');
+                        setTimeout(() => wrapper.classList.remove('active'), 3000);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+
+            return false;
+        }
+
+        function updateMiniCart(data) {
+            document.getElementById('cart-count').innerText = data.totalItems;
+            const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.totalAmount);
+            document.getElementById('mini-cart-total-amount').innerText = formattedTotal;
+
+            const itemsContainer = document.getElementById('mini-cart-items');
+            itemsContainer.innerHTML = '';
+
+            if (data.cartItems && data.cartItems.length > 0) {
+                data.cartItems.forEach(item => {
+                    const itemHtml = `
+                        <div class="mini-cart-item">
+                             <img src="${item.imageUrl}" alt="Product">
+                             <div class="mini-cart-item-info">
+                                 <span class="mini-cart-item-name">${item.name}</span>
+                                 <span class="mini-cart-item-price">
+                                    ${item.quantity} x 
+                                    ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                                 </span>
+                             </div>
+                        </div>
+                    `;
+                    itemsContainer.insertAdjacentHTML('beforeend', itemHtml);
+                });
+            } else {
+                itemsContainer.innerHTML = '<div style="text-align:center; padding: 20px; color:#999;">Giỏ hàng trống</div>';
+            }
+        }
+    </script>
 </body>
+
 </html>
