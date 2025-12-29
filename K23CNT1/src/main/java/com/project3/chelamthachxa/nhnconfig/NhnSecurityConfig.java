@@ -63,7 +63,10 @@ public class NhnSecurityConfig {
                                 "/nhnindex",               // Trang chủ
                                 "/nhnproducts/**",         // Danh sách sản phẩm
                                 "/nhnabout",               // Trang giới thiệu
-                                "/nhncontact"              // Trang liên hệ
+                                "/nhncontact",             // Trang liên hệ
+                                "/nhncontact",             // Trang liên hệ
+                                "/nhncheckout/payment",    // Trang thanh toán QR
+                                "/error"                   // Cho phép trang lỗi (404, 500) không bị chặn
                         ).permitAll()
 
 

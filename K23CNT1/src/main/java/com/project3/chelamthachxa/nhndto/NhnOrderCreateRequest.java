@@ -10,6 +10,7 @@ public class NhnOrderCreateRequest {
     private String tenNguoiNhan;
     private String diaChiGiaoHang;
     private String sdt;
+    private String paymentMethod;
     // Đã đổi thành import từ file NhnOrderItemRequest.java mới
     private List<NhnOrderItemRequest> items; // Danh sách sản phẩm muốn mua
 }

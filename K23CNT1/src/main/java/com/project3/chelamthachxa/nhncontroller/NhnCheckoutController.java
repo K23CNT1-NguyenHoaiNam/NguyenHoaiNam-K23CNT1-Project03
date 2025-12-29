@@ -4,6 +4,7 @@ import com.project3.chelamthachxa.nhnmodel.NhnCartItem;
 import com.project3.chelamthachxa.nhndto.NhnOrderCreateRequest;
 import com.project3.chelamthachxa.nhndto.NhnOrderItemRequest;
 import com.project3.chelamthachxa.nhnentity.NhnUser;
+import com.project3.chelamthachxa.nhnentity.NhnDonhang;
 import com.project3.chelamthachxa.nhnservice.NhnCartService;
 import com.project3.chelamthachxa.nhnservice.NhnDonhangService;
 import com.project3.chelamthachxa.nhnservice.NhnUserService;
@@ -95,14 +96,36 @@ public class NhnCheckoutController {
             itemRequest.setSoLuong(cartItem.getQuantity());
             orderItems.add(itemRequest);
         }
+        request.setPaymentMethod(paymentMethod);
         request.setItems(orderItems);
 
         // Save Order
-        nhnDonhangService.createOrder(request);
+        NhnDonhang order = nhnDonhangService.createOrder(request);
 
         // Clear Cart
         nhnCartService.clearCart(session);
 
+        if ("TRANSFER".equals(paymentMethod)) {
+            return "redirect:/nhncheckout/payment?orderId=" + order.getId();
+        }
+
         return "redirect:/nhndonhang";
+    }
+
+    @GetMapping("/payment")
+    public String viewPayment(@RequestParam("orderId") Long orderId, Model model, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/auth/login";
+        }
+
+        NhnDonhang order = nhnDonhangService.findOrderById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!order.getNhnUser().getUsername().equals(authentication.getName())) {
+            return "redirect:/nhnindex";
+        }
+
+        model.addAttribute("order", order);
+        return "nhnqr_payment";
     }
 }

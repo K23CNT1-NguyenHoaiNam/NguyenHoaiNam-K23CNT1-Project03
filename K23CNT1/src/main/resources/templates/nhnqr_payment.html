@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán QR - K23CNT1 Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .qr-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(160, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <header class="header">
+        <div class="container nav-bar">
+            <div class="logo">
+                <a th:href="@{/nhnindex}">
+                    <img th:src="@{/images/logo.png}" alt="Logo">
+                </a>
+            </div>
+            <nav class="nav-links">
+                <a th:href="@{/nhnindex}">Trang Chủ</a>
+                <a th:href="@{/nhnproducts}">Sản Phẩm</a>
+                <a th:href="@{/nhndonhang}">Đơn Hàng</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto py-12 px-4 flex-grow flex items-center justify-center">
+        <div class="max-w-md w-full qr-card p-8 rounded-2xl shadow-2xl text-center">
+            <h1 class="text-2xl font-bold text-[#A00000] mb-2">Quét Mã QR Để Thanh Toán</h1>
+            <p class="text-gray-600 mb-6 italic">Sử dụng ứng dụng Ngân hàng hoặc Ví điện tử để quét mã</p>
+
+            <div class="bg-white p-4 rounded-xl shadow-inner border border-gray-100 mb-6">
+                <img th:src="'https://api.vietqr.io/MB/0983460347/' + ${#numbers.formatDecimal(order.tongTien, 0, 0)} + '/NHNPROJECT3' + ${order.id} + '/vietqr_net_2.jpg?accountName=NGUYEN%20HOAI%20NAM'"
+                    alt="VietQR Logo" class="mx-auto rounded-lg">
+            </div>
+
+            <div class="space-y-3 text-left bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Mã đơn hàng:</span>
+                    <span class="font-bold text-gray-800" th:text="'NHNPROJECT3' + ${order.id}"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Số tiền:</span>
+                    <span class="font-bold text-[#A00000]"
+                        th:text="${#numbers.formatDecimal(order.tongTien, 0, 'COMMA', 0, 'POINT')} + '₫'"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Người thụ hưởng:</span>
+                    <span class="font-bold text-gray-800 uppercase">NGUYEN HOAI NAM</span>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <a th:href="@{/nhndonhang}"
+                    class="block w-full bg-[#A00000] text-white py-3 rounded-lg font-bold hover:bg-[#800000] transition duration-300">
+                    Xác nhận đã chuyển khoản
+                </a>
+                <p class="text-xs text-gray-400 mt-4">Hệ thống sẽ tự động duyệt đơn hàng sau khi nhận được tiền.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-section mt-auto py-6 bg-white border-t">
+        <div class="text-center text-gray-500 text-sm">
+            Copyright © 2025 K23CNT1 Store. All rights reserved.
+        </div>
+    </footer>
+</body>
+
+</html>

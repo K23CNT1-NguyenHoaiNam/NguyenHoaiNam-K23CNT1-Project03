@@ -37,6 +37,9 @@ public class NhnDonhang {
     @Column(name = "nhn_sdt")
     private String sdt;
 
+    @Column(name = "nhn_phuongthucthanhtoan")
+    private String phuongThucThanhToan;
+
     @ManyToOne
     @JoinColumn(name = "nhn_user_id", nullable = false)
     private NhnUser nhnUser; // Đơn hàng thuộc về NhnUser nào (Tên thuộc tính là nhnUser)

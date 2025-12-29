@@ -101,6 +101,7 @@ public class NhnDonhangService {
         nhnDonhang.setTenNguoiNhan(request.getTenNguoiNhan());
         nhnDonhang.setDiaChiGiaoHang(request.getDiaChiGiaoHang());
         nhnDonhang.setSdt(request.getSdt());
+        nhnDonhang.setPhuongThucThanhToan(request.getPaymentMethod());
         nhnDonhang.setTrangThai(NhnDonhang.TrangThaiDonHang.PENDING);
 
         Set<NhnDonhangItem> items = new HashSet<>();

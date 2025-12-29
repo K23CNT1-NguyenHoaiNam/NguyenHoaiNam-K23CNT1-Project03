@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <title th:text="${product.name}">Chi Tiết Sản Phẩm</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/product/detail.css}" />
+</head>
+
+<body>
+    <div class="container product-detail">
+        <div class="product-image">
+            <img th:src="@{${product.imageUrl}}" alt="${product.name}" />
+        </div>
+        <div class="product-info">
+            <h1 th:text="${product.name}"></h1>
+            <p class="price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')} + ' VNĐ'"></p>
+            <p class="description" th:text="${product.description}"></p>
+            <form th:action="@{/cart/add}" method="post">
+                <input type="hidden" name="productId" th:value="${product.id}" />
+                <label for="quantity">Số lượng:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" max="${product.stock}" />
+                <button type="submit" class="btn-add-cart">Thêm vào giỏ</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

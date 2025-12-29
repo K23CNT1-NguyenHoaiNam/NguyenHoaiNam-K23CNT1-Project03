@@ -62,7 +62,6 @@ CREATE TABLE nhn_donhang (
     nhn_tennguoinhan VARCHAR(255),
     nhn_diachigiaohang VARCHAR(255),
     nhn_sdt VARCHAR(20),
-    nhn_phuongthucthanhtoan VARCHAR(50),
     FOREIGN KEY (nhn_user_id) REFERENCES nhn_nguoidung(nhn_nguoidung_id)
 ) ENGINE=InnoDB;
 
@@ -79,7 +78,6 @@ CREATE TABLE nhn_donhang_item (
     FOREIGN KEY (nhn_sanpham_id) REFERENCES nhn_sanpham(nhn_sanpham_id)
 ) ENGINE=InnoDB;
 
-
 -- ---------------------------------------------------------------------
 -- DỮ LIỆU MẪU (SEED DATA)
 -- ---------------------------------------------------------------------
@@ -87,15 +85,6 @@ CREATE TABLE nhn_donhang_item (
 -- Thêm các vai trò cơ bản (ROLE_USER, ROLE_ADMIN)
 INSERT INTO nhn_vaitro (nhn_ten) VALUES ('ROLE_USER');
 INSERT INTO nhn_vaitro (nhn_ten) VALUES ('ROLE_ADMIN');
-
--- Thêm user Admin mặc định (Pass: 123456)
-INSERT INTO nhn_nguoidung (nhn_username, nhn_email, nhn_password, nhn_hoten, nhn_diachi, nhn_sdt)
-VALUES ('admin', 'admin@project3.com', '$2a$10$eE0h2.T.13yT79F4M/WbXuG5vW6vP0J1e9O2b4C6yD7E8F9G0H1I', 'Quản Trị Viên', 'Hà Nội', '0988888888');
-
-INSERT INTO nhn_user_vaitro (nhn_user_id, nhn_vaitro_id)
-SELECT n.nhn_nguoidung_id, v.nhn_vaitro_id
-FROM nhn_nguoidung n, nhn_vaitro v
-WHERE n.nhn_username = 'admin' AND v.nhn_ten = 'ROLE_ADMIN';
 
 -- Thêm sản phẩm mẫu
 INSERT INTO nhn_sanpham (nhn_tensanpham, nhn_mota, nhn_gia, nhn_soluongton, nhn_image_url) VALUES
@@ -106,7 +95,6 @@ INSERT INTO nhn_sanpham (nhn_tensanpham, nhn_mota, nhn_gia, nhn_soluongton, nhn_
 ('hộp chè lam (mè trắng) 500g', 'thơm ngon mềm dẻo, thêm hương mè trắng', 100000.00, 705, '/images/product_05.jpg'),
 ('hộp chè lam quai sách (mè đen) 1kg', 'thơm ngon mềm dẻo, thêm hương mè đen', 120000.00, 705, '/images/product_06.jpg');
 
--- User test
 INSERT IGNORE INTO nhn_nguoidung (nhn_username, nhn_email, nhn_password, nhn_hoten, nhn_diachi, nhn_sdt) VALUES
 ('user_test', 'user@test.com', '$2a$10$eE0h2.T.13yT79F4M/WbXuG5vW6vP0J1e9O2b4C6yD7E8F9G0H1I', 'Nguyễn Văn A', '456 Phố Người Dùng, HCM', '0901234567');
 
@@ -115,17 +103,38 @@ SELECT n.nhn_nguoidung_id, v.nhn_vaitro_id
 FROM nhn_nguoidung n, nhn_vaitro v
 WHERE n.nhn_username = 'user_test' AND v.nhn_ten = 'ROLE_USER';
 
--- Tạo đơn hàng mẫu
 SET @user_id = (SELECT nhn_nguoidung_id FROM nhn_nguoidung WHERE nhn_username = 'user_test');
-SET @sanpham1_id = (SELECT nhn_sanpham_id FROM nhn_sanpham WHERE nhn_tensanpham LIKE 'hộp chè lam (thường) 300g' LIMIT 1);
-SET @sanpham2_id = (SELECT nhn_sanpham_id FROM nhn_sanpham WHERE nhn_tensanpham LIKE 'hộp chè lam quai sách (thường) 1kg' LIMIT 1);
-SET @sanpham4_id = (SELECT nhn_sanpham_id FROM nhn_sanpham WHERE nhn_tensanpham LIKE 'hộp chè lam (mè đen) 500g' LIMIT 1);
+SET @sanpham1_id = (SELECT nhn_sanpham_id FROM nhn_sanpham WHERE nhn_tensanpham LIKE 'hộp chè lam (thường) 300g');
+SET @sanpham2_id = (SELECT nhn_sanpham_id FROM nhn_sanpham WHERE nhn_tensanpham LIKE 'hộp chè lam quai sách (thường) 1kg');
+SET @sanpham4_id = (SELECT nhn_sanpham_id FROM nhn_sanpham WHERE nhn_tensanpham LIKE 'hộp chè lam (mè đen) 500g');
 
 INSERT INTO nhn_donhang (nhn_user_id, nhn_ngaydathang, nhn_trangthai, nhn_tongtien, nhn_tennguoinhan, nhn_diachigiaohang, nhn_sdt) VALUES
-(@user_id, NOW() - INTERVAL 2 DAY, 'PENDING', 150000.00, 'Nguyễn Văn A', '456 Phố Người Dùng, HCM', '0901234567');
+(@user_id, NOW() - INTERVAL 2 DAY, 'PENDING', 125000.00, 'Nguyễn Văn A', '456 Phố Người Dùng, HCM', '0901234567');
 SET @donhang1_id = LAST_INSERT_ID();
 
 INSERT INTO nhn_donhang_item (nhn_donhang_id, nhn_sanpham_id, nhn_soluong, nhn_giaban) VALUES
 (@donhang1_id, @sanpham1_id, 2, 25000.00),
 (@donhang1_id, @sanpham2_id, 1, 100000.00);
 
+UPDATE nhn_donhang SET nhn_tongtien = 150000.00 WHERE nhn_donhang_id = @donhang1_id;
+
+INSERT INTO nhn_donhang (nhn_user_id, nhn_ngaydathang, nhn_trangthai, nhn_tongtien, nhn_tennguoinhan, nhn_diachigiaohang, nhn_sdt) VALUES
+(@user_id, NOW() - INTERVAL 10 DAY, 'DELIVERED', 45000.00, 'Nguyễn Văn A', '456 Phố Người Dùng, HCM', '0901234567');
+SET @donhang2_id = LAST_INSERT_ID();
+
+INSERT INTO nhn_donhang_item (nhn_donhang_id, nhn_sanpham_id, nhn_soluong, nhn_giaban) VALUES
+(@donhang2_id, @sanpham4_id, 1, 45000.00);
+
+INSERT INTO nhn_donhang (nhn_user_id, nhn_ngaydathang, nhn_trangthai, nhn_tongtien, nhn_tennguoinhan, nhn_diachigiaohang, nhn_sdt) VALUES
+(@admin_id, NOW() - INTERVAL 1 DAY, 'PROCESSING', 100000.00, 'Quản trị viên', '123 Đường Admin, Hà Nội', '0987654321');
+SET @donhang3_id = LAST_INSERT_ID();
+
+INSERT INTO nhn_donhang_item (nhn_donhang_id, nhn_sanpham_id, nhn_soluong, nhn_giaban) VALUES
+(@donhang3_id, @sanpham2_id, 1, 100000.00);
+
+INSERT INTO nhn_donhang (nhn_user_id, nhn_ngaydathang, nhn_trangthai, nhn_tongtien, nhn_tennguoinhan, nhn_diachigiaohang, nhn_sdt) VALUES
+(@user_id, NOW(), 'PENDING', 25000.00, 'Nguyễn Văn A', '456 Phố Người Dùng, HCM', '0901234567');
+SET @donhang4_id = LAST_INSERT_ID();
+
+INSERT INTO nhn_donhang_item (nhn_donhang_id, nhn_sanpham_id, nhn_soluong, nhn_giaban) VALUES
+(@donhang4_id, @sanpham1_id, 1, 25000.00);

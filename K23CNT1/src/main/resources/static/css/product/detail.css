@@ -1,0 +1,43 @@
+/* --------------------------------------------------------------------- */
+/* Product Detail Page Styles */
+/* --------------------------------------------------------------------- */
+
+.product-detail {
+    display: flex;
+    gap: 30px;
+    margin-top: 40px;
+    background: var(--background-color);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.product-image img {
+    max-width: 400px;
+    border-radius: 8px;
+}
+
+.product-info h1 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.price {
+    font-size: 1.5em;
+    color: var(--price-color);
+    margin-bottom: 20px;
+}
+
+.btn-add-cart {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-add-cart:hover {
+    background-color: #0056b3;
+}
